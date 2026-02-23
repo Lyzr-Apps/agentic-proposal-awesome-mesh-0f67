@@ -14,9 +14,8 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { FiSend, FiUpload, FiDownload, FiRefreshCw, FiChevronDown, FiChevronUp, FiFile, FiTrash2, FiClock, FiSettings, FiLayout, FiCheckCircle, FiAlertCircle, FiCopy, FiX, FiMenu, FiFileText, FiGrid, FiList, FiCode } from 'react-icons/fi'
+import { FiSend, FiUpload, FiDownload, FiRefreshCw, FiFile, FiTrash2, FiClock, FiSettings, FiLayout, FiCheckCircle, FiAlertCircle, FiCopy, FiX, FiMenu, FiFileText, FiGrid, FiList, FiCode } from 'react-icons/fi'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -50,26 +49,10 @@ const THEME_VARS = {
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-interface Slide {
-  slide_title: string
-  slide_html: string
-  slide_content?: string[]
-  speaker_notes: string
-}
-
-interface Section {
-  section_name: string
-  section_number: number
-  slides: Slide[]
-}
-
-interface Proposal {
-  proposal_title: string
-  client_name: string
-  deck_depth: string
-  total_slides: number
-  sections: Section[]
-  validation_summary: string
+interface ProposalData {
+  htmlContent: string
+  deckDepth: string
+  generatedAt: string
 }
 
 interface ChatMessage {
@@ -86,9 +69,9 @@ interface UploadedFile {
 
 interface HistoryEntry {
   id: string
-  proposal: Proposal
-  createdAt: string
+  htmlContent: string
   deckDepth: string
+  generatedAt: string
   messageCount: number
 }
 
@@ -96,93 +79,130 @@ interface SettingsState {
   toneInstitutional: boolean
   suppressMarketing: boolean
   defaultDeckDepth: '15' | '30'
-  exportFormat: 'json' | 'markdown'
+  exportFormat: 'html' | 'markdown'
 }
 
 // ─── Sample Data ─────────────────────────────────────────────────────────────
 
-const SAMPLE_PROPOSAL: Proposal = {
-  proposal_title: 'Digital Transformation Strategy for Meridian Financial',
-  client_name: 'Meridian Financial Group',
-  deck_depth: '15-slide Summary',
-  total_slides: 15,
-  sections: [
-    {
-      section_name: 'Executive Summary',
-      section_number: 1,
-      slides: [
-        {
-          slide_title: 'Transforming Meridian Financial for the Next Decade',
-          slide_html: '<section n="1" id="lc01">\n<div class="body">\n    <h1>Transforming Meridian Financial for the Next Decade</h1>\n    <p>Meridian Financial faces a critical inflection point in digital capabilities. We propose an 18-month transformation roadmap across four core pillars targeting operational modernization and revenue growth.</p>\n    <p>Projected outcomes include 35% operational efficiency gain and 22% revenue uplift, with a total investment of $4.2M and a validated 14-month payback period.</p>\n    <p><strong>We recommend immediate approval of this transformation initiative given the competitive urgency and strong risk-adjusted returns demonstrated in our financial modeling.</strong></p>\n</div>\n</section>',
-          speaker_notes: 'Open with the strategic imperative. Emphasize that this is not a technology project but a business transformation initiative. Reference CEO\'s keynote from Q3 earnings call about digital-first strategy.'
-        }
-      ]
-    },
-    {
-      section_name: 'Current State Assessment',
-      section_number: 2,
-      slides: [
-        {
-          slide_title: 'Where Meridian Stands Today',
-          slide_html: '<section n="2" id="lc02">\n<div class="body">\n    <h1>Where Meridian Stands Today</h1>\n    <p>Legacy core banking platform limits product velocity significantly. Customer NPS declined 12 points year-over-year, driven primarily by digital experience gaps across mobile and web channels.</p>\n    <p>Manual processes consume 40% of middle-office capacity. Competitor analysis reveals Meridian trailing in six of eight digital capability areas measured by industry benchmarks.</p>\n    <p><strong>Without intervention, current trajectory projects further NPS erosion and an estimated $6.2M in unrealized revenue over the next 24 months.</strong></p>\n</div>\n</section>',
-          speaker_notes: 'Use specific data points from the diagnostic assessment. Frame as opportunity for improvement rather than criticism of current operations.'
-        }
-      ]
-    },
-    {
-      section_name: 'Proposed Solution Architecture',
-      section_number: 3,
-      slides: [
-        {
-          slide_title: 'Four-Pillar Transformation Framework',
-          slide_html: '<section n="3" id="lc03">\n<div class="body">\n    <h1>Four-Pillar Transformation Framework</h1>\n    <p>Pillar 1: API-first core modernization with phased migration. Pillar 2: Unified customer data platform delivering a comprehensive 360-degree client view across all touchpoints.</p>\n    <p>Pillar 3: Intelligent automation for credit decisioning and compliance workflows. Pillar 4: Real-time analytics and executive dashboard suite enabling data-driven decision making at all levels.</p>\n    <p><strong>Each pillar is interdependent but structured for phased delivery, enabling risk containment while maintaining transformation momentum across the program.</strong></p>\n</div>\n</section>',
-          speaker_notes: 'Walk through each pillar sequentially. Emphasize that pillars are interdependent but can be phased for risk management.'
-        }
-      ]
-    },
-    {
-      section_name: 'ROI and Financial Impact',
-      section_number: 4,
-      slides: [
-        {
-          slide_title: 'Investment Returns and Value Creation',
-          slide_html: '<section n="4" id="lc04">\n<div class="body">\n    <h1>Investment Returns and Value Creation</h1>\n    <p>Year 1 savings of $1.8M from automation of manual processes. Year 2 revenue uplift of $3.2M projected from improved customer conversion rates across digital and branch channels.</p>\n    <p>Year 3 cumulative NPV reaches $8.7M at 12% discount rate. Risk-adjusted IRR of 42% across the full transformation program using conservative baseline assumptions.</p>\n    <p><strong>Financial projections validated by Meridian CFO office. Conservative scenario shows breakeven at month 14; optimistic scenario achieves breakeven at month 10.</strong></p>\n</div>\n</section>',
-          speaker_notes: 'All financial projections validated by Meridian CFO office. Present conservative, base, and optimistic scenarios.'
-        }
-      ]
-    },
-    {
-      section_name: 'Implementation Timeline',
-      section_number: 5,
-      slides: [
-        {
-          slide_title: 'Phased Delivery Roadmap',
-          slide_html: '<section n="5" id="lc05">\n<div class="body">\n    <h1>Phased Delivery Roadmap</h1>\n    <p>Phase 1 (Months 1-4): Foundation and data platform setup with early-win deliverables. Phase 2 (Months 5-10): Core system migration and automation deployment targeting highest-impact workflows first.</p>\n    <p>Phase 3 (Months 11-15): Analytics layer build-out and performance optimization. Phase 4 (Months 16-18): Full organizational rollout with structured change management and adoption tracking.</p>\n    <p><strong>Decision gates between phases ensure investment committee oversight at each stage, with documented go/no-go criteria and rollback provisions.</strong></p>\n</div>\n</section>',
-          speaker_notes: 'Highlight early wins in Phase 1 to build momentum and stakeholder confidence. Note key decision gates between phases.'
-        }
-      ]
-    }
-  ],
-  validation_summary: '<strong>Validation Complete</strong> -- All financial projections cross-referenced with industry benchmarks. ROI assumptions validated against 3 comparable transformations. Risk factors documented with mitigation strategies for each phase.'
-}
+const SAMPLE_HTML = `<header>
+<h1>Digital Transformation Strategy for Meridian Financial</h1>
+<p class="meta">Client: Meridian Financial Group | Deck: 15-slide Summary | Slides: 15</p>
+</header>
+
+<section n="1" id="lc01">
+<div class="body">
+    <h1>Executive Summary</h1>
+    <p>Meridian Financial faces a critical inflection point in digital capabilities. We propose an 18-month transformation roadmap across four core pillars targeting operational modernization and revenue growth.</p>
+    <p>Projected outcomes include 35% operational efficiency gain and 22% revenue uplift, with a total investment of $4.2M and a validated 14-month payback period.</p>
+    <p><strong>We recommend immediate approval of this transformation initiative given the competitive urgency and strong risk-adjusted returns demonstrated in our financial modeling.</strong></p>
+</div>
+</section>
+
+<section n="2" id="lc02">
+<div class="body">
+    <h1>Current State Assessment</h1>
+    <p>Legacy core banking platform limits product velocity significantly. Customer NPS declined 12 points year-over-year, driven primarily by digital experience gaps across mobile and web channels.</p>
+    <p>Manual processes consume 40% of middle-office capacity. Competitor analysis reveals Meridian trailing in six of eight digital capability areas measured by industry benchmarks.</p>
+    <p><strong>Without intervention, current trajectory projects further NPS erosion and an estimated $6.2M in unrealized revenue over the next 24 months.</strong></p>
+</div>
+</section>
+
+<section n="3" id="lc03">
+<div class="body">
+    <h1>Proposed Solution Architecture</h1>
+    <p>Pillar 1: API-first core modernization with phased migration. Pillar 2: Unified customer data platform delivering a comprehensive 360-degree client view across all touchpoints.</p>
+    <p>Pillar 3: Intelligent automation for credit decisioning and compliance workflows. Pillar 4: Real-time analytics and executive dashboard suite enabling data-driven decision making at all levels.</p>
+    <p><strong>Each pillar is interdependent but structured for phased delivery, enabling risk containment while maintaining transformation momentum across the program.</strong></p>
+</div>
+</section>
+
+<section n="4" id="lc04">
+<div class="body">
+    <h1>ROI and Financial Impact</h1>
+    <p>Year 1 savings of $1.8M from automation of manual processes. Year 2 revenue uplift of $3.2M projected from improved customer conversion rates across digital and branch channels.</p>
+    <p>Year 3 cumulative NPV reaches $8.7M at 12% discount rate. Risk-adjusted IRR of 42% across the full transformation program using conservative baseline assumptions.</p>
+    <p><strong>Financial projections validated by Meridian CFO office. Conservative scenario shows breakeven at month 14; optimistic scenario achieves breakeven at month 10.</strong></p>
+</div>
+</section>
+
+<section n="5" id="lc05">
+<div class="body">
+    <h1>Phased Delivery Roadmap</h1>
+    <p>Phase 1 (Months 1-4): Foundation and data platform setup with early-win deliverables. Phase 2 (Months 5-10): Core system migration and automation deployment targeting highest-impact workflows first.</p>
+    <p>Phase 3 (Months 11-15): Analytics layer build-out and performance optimization. Phase 4 (Months 16-18): Full organizational rollout with structured change management and adoption tracking.</p>
+    <p><strong>Decision gates between phases ensure investment committee oversight at each stage, with documented go/no-go criteria and rollback provisions.</strong></p>
+</div>
+</section>
+
+<footer class="validation">
+<p><strong>Validation Complete</strong> -- All financial projections cross-referenced with industry benchmarks. ROI assumptions validated against 3 comparable transformations. Risk factors documented with mitigation strategies for each phase.</p>
+</footer>`
 
 const SAMPLE_MESSAGES: ChatMessage[] = [
   {
     role: 'user',
     content: 'We need a proposal for Meridian Financial Group. They are a mid-market financial services company looking to modernize their core banking platform.',
-    timestamp: '10:32 AM'
+    timestamp: '10:32 AM',
   },
   {
     role: 'assistant',
     content: 'Understood. I have captured the client context for Meridian Financial Group. Key details noted:\n\n- **Industry:** Financial Services\n- **Segment:** Mid-market\n- **Primary Need:** Core banking platform modernization\n\nPlease share any additional context such as pain points, budget constraints, or competitive pressures. When ready, select your deck depth and click Generate Proposal.',
-    timestamp: '10:32 AM'
+    timestamp: '10:32 AM',
   },
   {
     role: 'user',
     content: 'Their NPS has dropped 12 points. Manual processes are a big problem in the middle office. Budget is around $4-5M over 18 months.',
-    timestamp: '10:34 AM'
-  }
+    timestamp: '10:34 AM',
+  },
 ]
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function extractTitleFromHtml(html: string): string {
+  const headerMatch = html.match(/<header[^>]*>[\s\S]*?<h1[^>]*>([\s\S]*?)<\/h1>/i)
+  if (headerMatch?.[1]) return headerMatch[1].replace(/<[^>]+>/g, '').trim()
+  const h1Match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)
+  if (h1Match?.[1]) return h1Match[1].replace(/<[^>]+>/g, '').trim()
+  return 'Untitled Proposal'
+}
+
+function extractClientFromHtml(html: string): string {
+  const metaMatch = html.match(/<p[^>]*class="meta"[^>]*>([\s\S]*?)<\/p>/i)
+  if (metaMatch?.[1]) {
+    const clientMatch = metaMatch[1].match(/Client:\s*([^|<]+)/i)
+    if (clientMatch?.[1]) return clientMatch[1].trim()
+  }
+  return 'Unknown Client'
+}
+
+function countSectionsInHtml(html: string): number {
+  const matches = html.match(/<section[\s>]/gi)
+  return matches?.length ?? 0
+}
+
+function htmlToMarkdown(html: string): string {
+  let md = html
+    .replace(/<header[^>]*>/gi, '')
+    .replace(/<\/header>/gi, '')
+    .replace(/<footer[^>]*>/gi, '\n---\n')
+    .replace(/<\/footer>/gi, '')
+    .replace(/<section[^>]*>/gi, '\n')
+    .replace(/<\/section>/gi, '\n')
+    .replace(/<div[^>]*>/gi, '')
+    .replace(/<\/div>/gi, '')
+    .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, '# $1\n\n')
+    .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, '## $1\n\n')
+    .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, '### $1\n\n')
+    .replace(/<strong>([\s\S]*?)<\/strong>/gi, '**$1**')
+    .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, '$1\n\n')
+    .replace(/<li>([\s\S]*?)<\/li>/gi, '- $1\n')
+    .replace(/<ul>/gi, '')
+    .replace(/<\/ul>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+  return md
+}
 
 // ─── Markdown Renderer ──────────────────────────────────────────────────────
 
@@ -550,91 +570,22 @@ function ChatPanel({
   )
 }
 
-function SlideCard({
-  slide,
-  sectionNumber,
-}: {
-  slide: Slide
-  sectionNumber: number
-}) {
-  const [notesOpen, setNotesOpen] = useState(false)
-
-  // Determine if we have HTML content or legacy array content
-  const hasHtml = typeof slide?.slide_html === 'string' && slide.slide_html.trim().length > 0
-  const hasLegacyContent = Array.isArray(slide?.slide_content) && slide.slide_content.length > 0
-
-  return (
-    <Card className="border-border shadow-sm">
-      <CardHeader className="pb-3 pt-4 px-5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <CardTitle className="text-sm font-normal font-serif tracking-wide leading-snug">
-              {slide?.slide_title ?? 'Untitled Slide'}
-            </CardTitle>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="px-5 pb-3">
-        {hasHtml ? (
-          <div
-            className="slide-html-content text-xs font-light text-foreground/80 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: slide.slide_html }}
-          />
-        ) : hasLegacyContent ? (
-          <ul className="space-y-1.5">
-            {slide.slide_content!.map((item, j) => (
-              <li
-                key={j}
-                className="text-xs font-light text-foreground/80 leading-relaxed flex gap-2"
-              >
-                <span className="text-primary mt-0.5 flex-shrink-0">-</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-xs text-muted-foreground font-light italic">No content available</p>
-        )}
-      </CardContent>
-      {slide?.speaker_notes && (
-        <CardFooter className="px-5 pb-4">
-          <Collapsible open={notesOpen} onOpenChange={setNotesOpen} className="w-full">
-            <CollapsibleTrigger className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-light tracking-wider uppercase hover:text-foreground transition-colors">
-              {notesOpen ? (
-                <FiChevronUp className="w-3 h-3" />
-              ) : (
-                <FiChevronDown className="w-3 h-3" />
-              )}
-              Speaker Notes
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="mt-2 p-3 bg-muted/50 border border-border text-xs font-light text-muted-foreground leading-relaxed">
-                {slide.speaker_notes}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </CardFooter>
-      )}
-    </Card>
-  )
-}
-
 function ProposalPreview({
   proposal,
   loading,
   generatingSection,
   progressPercent,
-  onRegenerateSection,
-  onExportJSON,
+  onRegenerate,
+  onExportHTML,
   onExportMarkdown,
   onCopyToClipboard,
 }: {
-  proposal: Proposal | null
+  proposal: ProposalData | null
   loading: boolean
   generatingSection: string
   progressPercent: number
-  onRegenerateSection: (section: Section) => void
-  onExportJSON: () => void
+  onRegenerate: () => void
+  onExportHTML: () => void
   onExportMarkdown: () => void
   onCopyToClipboard: () => void
 }) {
@@ -674,6 +625,10 @@ function ProposalPreview({
     )
   }
 
+  const title = extractTitleFromHtml(proposal.htmlContent)
+  const client = extractClientFromHtml(proposal.htmlContent)
+  const sectionCount = countSectionsInHtml(proposal.htmlContent)
+
   return (
     <div className="flex flex-col h-full">
       {/* Proposal Header */}
@@ -681,17 +636,17 @@ function ProposalPreview({
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <h2 className="font-serif text-lg font-normal tracking-[0.08em] text-foreground leading-snug">
-              {proposal?.proposal_title ?? 'Untitled Proposal'}
+              {title}
             </h2>
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               <Badge variant="outline" className="text-[10px] font-light tracking-wider">
-                {proposal?.client_name ?? 'Unknown Client'}
+                {client}
               </Badge>
               <Badge variant="secondary" className="text-[10px] font-light tracking-wider">
-                {proposal?.deck_depth ?? 'Standard'}
+                {proposal.deckDepth}
               </Badge>
               <Badge variant="secondary" className="text-[10px] font-light tracking-wider">
-                {proposal?.total_slides ?? 0} slides
+                {sectionCount} sections
               </Badge>
             </div>
           </div>
@@ -703,17 +658,17 @@ function ProposalPreview({
                     <FiCopy className="w-3.5 h-3.5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Copy to clipboard</TooltipContent>
+                <TooltipContent>Copy HTML to clipboard</TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={onExportJSON} className="h-8 w-8">
+                  <Button variant="ghost" size="icon" onClick={onExportHTML} className="h-8 w-8">
                     <FiDownload className="w-3.5 h-3.5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Export JSON</TooltipContent>
+                <TooltipContent>Export HTML</TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <TooltipProvider>
@@ -726,88 +681,29 @@ function ProposalPreview({
                 <TooltipContent>Export Markdown</TooltipContent>
               </Tooltip>
             </TooltipProvider>
+            <Separator orientation="vertical" className="h-5 mx-1" />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="sm" onClick={onRegenerate} className="h-8 text-xs font-light tracking-wider gap-1.5">
+                    <FiRefreshCw className="w-3 h-3" />
+                    Regenerate
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Regenerate entire proposal</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </div>
 
-      {/* Sections */}
+      {/* Rendered HTML Content */}
       <ScrollArea className="flex-1">
-        <div className="p-5 space-y-6">
-          {Array.isArray(proposal?.sections) &&
-            proposal.sections.map((section, i) => {
-              const isFinancial =
-                (section?.section_name ?? '').toLowerCase().includes('roi') ||
-                (section?.section_name ?? '').toLowerCase().includes('commercial') ||
-                (section?.section_name ?? '').toLowerCase().includes('financial')
-
-              return (
-                <div key={i} className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 bg-primary text-primary-foreground flex items-center justify-center text-xs font-light">
-                        {section?.section_number ?? i + 1}
-                      </div>
-                      <h3 className="font-serif text-sm font-normal tracking-[0.08em] text-foreground">
-                        {section?.section_name ?? 'Untitled Section'}
-                      </h3>
-                      {isFinancial && (
-                        <Badge className="text-[9px] font-light tracking-wider bg-green-600/10 text-green-700 border-green-600/20">
-                          <FiCheckCircle className="w-2.5 h-2.5 mr-1" />
-                          Validated
-                        </Badge>
-                      )}
-                    </div>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => onRegenerateSection(section)}
-                          >
-                            <FiRefreshCw className="w-3 h-3" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Regenerate section</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <div className="space-y-2 ml-10">
-                    {Array.isArray(section?.slides) &&
-                      section.slides.map((slide, j) => (
-                        <SlideCard
-                          key={j}
-                          slide={slide}
-                          sectionNumber={section?.section_number ?? i + 1}
-                        />
-                      ))}
-                  </div>
-                </div>
-              )
-            })}
-
-          {/* Validation Summary */}
-          {proposal?.validation_summary && (
-            <div className="border border-border p-4 bg-muted/30">
-              <div className="flex items-center gap-2 mb-2">
-                <FiCheckCircle className="w-3.5 h-3.5 text-green-600" />
-                <span className="text-xs font-light tracking-wider uppercase text-muted-foreground">
-                  Validation Summary
-                </span>
-              </div>
-              {proposal.validation_summary.includes('<') ? (
-                <div
-                  className="text-sm font-light text-foreground/80 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: proposal.validation_summary }}
-                />
-              ) : (
-                <div className="text-sm font-light text-foreground/80 leading-relaxed">
-                  {renderMarkdown(proposal.validation_summary)}
-                </div>
-              )}
-            </div>
-          )}
+        <div className="p-6">
+          <div
+            className="slide-html-content"
+            dangerouslySetInnerHTML={{ __html: proposal.htmlContent }}
+          />
         </div>
       </ScrollArea>
     </div>
@@ -876,49 +772,53 @@ function HistoryView({
             : 'space-y-3'
         )}
       >
-        {history.map((entry) => (
-          <Card key={entry.id} className="border-border shadow-sm">
-            <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm font-serif font-normal tracking-wide leading-snug truncate">
-                {entry.proposal?.proposal_title ?? 'Untitled'}
-              </CardTitle>
-              <CardDescription className="text-[10px] font-light">
-                {entry.proposal?.client_name ?? 'Unknown Client'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="px-4 pb-2">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <Badge variant="secondary" className="text-[9px] font-light">
-                  {entry.deckDepth}
-                </Badge>
-                <Badge variant="secondary" className="text-[9px] font-light">
-                  {entry.proposal?.total_slides ?? 0} slides
-                </Badge>
-                <Badge variant="outline" className="text-[9px] font-light">
-                  {entry.createdAt}
-                </Badge>
-              </div>
-            </CardContent>
-            <CardFooter className="px-4 pb-4 gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 text-xs font-light tracking-wider h-8"
-                onClick={() => onLoad(entry)}
-              >
-                Load
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                onClick={() => onDelete(entry.id)}
-              >
-                <FiTrash2 className="w-3 h-3" />
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+        {history.map((entry) => {
+          const entryTitle = extractTitleFromHtml(entry.htmlContent ?? '')
+          const entryClient = extractClientFromHtml(entry.htmlContent ?? '')
+          return (
+            <Card key={entry.id} className="border-border shadow-sm">
+              <CardHeader className="pb-2 pt-4 px-4">
+                <CardTitle className="text-sm font-serif font-normal tracking-wide leading-snug truncate">
+                  {entryTitle}
+                </CardTitle>
+                <CardDescription className="text-[10px] font-light">
+                  {entryClient}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-4 pb-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Badge variant="secondary" className="text-[9px] font-light">
+                    {entry.deckDepth}
+                  </Badge>
+                  <Badge variant="secondary" className="text-[9px] font-light">
+                    {entry.messageCount} message{entry.messageCount !== 1 ? 's' : ''}
+                  </Badge>
+                  <Badge variant="outline" className="text-[9px] font-light">
+                    {entry.generatedAt}
+                  </Badge>
+                </div>
+              </CardContent>
+              <CardFooter className="px-4 pb-4 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 text-xs font-light tracking-wider h-8"
+                  onClick={() => onLoad(entry)}
+                >
+                  Load
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  onClick={() => onDelete(entry.id)}
+                >
+                  <FiTrash2 className="w-3 h-3" />
+                </Button>
+              </CardFooter>
+            </Card>
+          )
+        })}
       </div>
     </div>
   )
@@ -1022,15 +922,15 @@ function SettingsView({
             </div>
             <div className="flex items-center gap-2 bg-muted p-0.5">
               <button
-                onClick={() => onUpdate({ exportFormat: 'json' })}
+                onClick={() => onUpdate({ exportFormat: 'html' })}
                 className={cn(
                   'px-3 py-1 text-xs font-light tracking-wider transition-colors',
-                  settings.exportFormat === 'json'
+                  settings.exportFormat === 'html'
                     ? 'bg-background shadow-sm text-foreground'
                     : 'text-muted-foreground'
                 )}
               >
-                JSON
+                HTML
               </button>
               <button
                 onClick={() => onUpdate({ exportFormat: 'markdown' })}
@@ -1103,7 +1003,7 @@ export default function Page() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
-  const [proposal, setProposal] = useState<Proposal | null>(null)
+  const [proposal, setProposal] = useState<ProposalData | null>(null)
   const [loading, setLoading] = useState(false)
   const [activeAgentId, setActiveAgentId] = useState<string | null>(null)
   const [generatingSection, setGeneratingSection] = useState('')
@@ -1118,16 +1018,15 @@ export default function Page() {
     toneInstitutional: true,
     suppressMarketing: true,
     defaultDeckDepth: '15',
-    exportFormat: 'json',
+    exportFormat: 'html',
   })
   const [showSampleData, setShowSampleData] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
-  const [regeneratingSection, setRegeneratingSection] = useState<number | null>(null)
 
   // ─── Load History & Settings ───
   useEffect(() => {
     try {
-      const savedHistory = localStorage.getItem('proposal-history')
+      const savedHistory = localStorage.getItem('proposal-history-v2')
       if (savedHistory) {
         const parsed = JSON.parse(savedHistory)
         if (Array.isArray(parsed)) {
@@ -1156,7 +1055,7 @@ export default function Page() {
   // ─── Persist History ───
   useEffect(() => {
     try {
-      localStorage.setItem('proposal-history', JSON.stringify(history))
+      localStorage.setItem('proposal-history-v2', JSON.stringify(history))
     } catch {
       // Ignore
     }
@@ -1175,7 +1074,11 @@ export default function Page() {
   useEffect(() => {
     if (showSampleData) {
       setMessages(SAMPLE_MESSAGES)
-      setProposal(SAMPLE_PROPOSAL)
+      setProposal({
+        htmlContent: SAMPLE_HTML,
+        deckDepth: '15-slide Summary',
+        generatedAt: new Date().toISOString(),
+      })
       setUploadedFiles([
         { name: 'Meridian_RFP.pdf', status: 'success' },
         { name: 'Financial_Data.docx', status: 'success' },
@@ -1204,25 +1107,64 @@ export default function Page() {
 
     return `Generate a ${deckDepth}-slide executive proposal based on the following context.
 
+Setting: Venture capital investment review.
+Audience: Internal investment committee partners.
 ${toneDirective}
 ${marketingDirective}
 
 Client Context:
 ${allMessages}
 
-CRITICAL OUTPUT FORMAT: Each slide MUST include a slide_html field containing semantic HTML content. Use this exact format per slide:
+OUTPUT FORMAT: Return ONLY raw HTML. No JSON, no markdown, no code fences.
 
-<section n="{slide_number}" id="lc{zero_padded_number}">
+Start with:
+<header>
+<h1>{Proposal Title}</h1>
+<p class="meta">Client: {name} | Deck: ${deckDepth}-slide | Slides: ${deckDepth}</p>
+</header>
+
+Then each slide as:
+<section n="{number}" id="lc{zero_padded}">
 <div class="body">
     <h1>{Slide Title}</h1>
-    <p>[Content paragraph — 30-40 words, factual and analytical]</p>
-    <p>[Content paragraph — 30-40 words, grounded in data]</p>
-    <p><strong>[Key takeaway or recommendation — 30-40 words]</strong></p>
+    <p>[30-40 words, factual]</p>
+    <p>[30-40 words, data-grounded]</p>
+    <p><strong>[30-40 words, key recommendation]</strong></p>
 </div>
 </section>
 
-Return a structured JSON proposal with sections, each containing slides with slide_title, slide_html (the HTML block above), and speaker_notes.`
+End with:
+<footer class="validation">
+<p>[Validation summary]</p>
+</footer>`
   }, [messages, deckDepth, settings])
+
+  // ─── Extract HTML from agent response ───
+  const extractHtmlFromResponse = useCallback((result: any): string => {
+    let htmlContent = ''
+    const responseResult = result?.response?.result
+
+    if (typeof responseResult === 'string') {
+      htmlContent = responseResult
+    } else if (responseResult?.html_content && typeof responseResult.html_content === 'string') {
+      htmlContent = responseResult.html_content
+    } else if (result?.response?.message && typeof result.response.message === 'string') {
+      htmlContent = result.response.message
+    } else if (result?.raw_response && typeof result.raw_response === 'string') {
+      htmlContent = result.raw_response
+    } else if (typeof responseResult === 'object' && responseResult !== null) {
+      // Last resort: stringify
+      htmlContent = JSON.stringify(responseResult)
+    }
+
+    // Clean up code fences if present
+    htmlContent = htmlContent
+      .replace(/^```html?\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim()
+
+    return htmlContent
+  }, [])
 
   // ─── Send Message ───
   const handleSend = useCallback(() => {
@@ -1237,7 +1179,6 @@ Return a structured JSON proposal with sections, each containing slides with sli
     setMessages((prev) => [...prev, userMsg])
     setInputValue('')
 
-    // Add assistant acknowledgment
     const assistantMsg: ChatMessage = {
       role: 'assistant',
       content:
@@ -1293,7 +1234,6 @@ Return a structured JSON proposal with sections, each containing slides with sli
     try {
       const prompt = buildPrompt()
 
-      // Simulate progress during long API call
       const progressInterval = setInterval(() => {
         setProgressPercent((prev) => {
           if (prev >= 85) return prev
@@ -1323,64 +1263,40 @@ Return a structured JSON proposal with sections, each containing slides with sli
       setGeneratingSection('Complete')
 
       if (result.success) {
-        const proposalData = result?.response?.result
-        if (proposalData && typeof proposalData === 'object') {
-          // Normalize sections to ensure slide_html is mapped properly
-          const rawSections = Array.isArray(proposalData?.sections) ? proposalData.sections : []
-          const normalizedSections = rawSections.map((sec: any) => ({
-            section_name: sec?.section_name ?? 'Untitled Section',
-            section_number: sec?.section_number ?? 0,
-            slides: Array.isArray(sec?.slides) ? sec.slides.map((sl: any) => ({
-              slide_title: sl?.slide_title ?? 'Untitled Slide',
-              slide_html: sl?.slide_html ?? '',
-              slide_content: Array.isArray(sl?.slide_content) ? sl.slide_content : undefined,
-              speaker_notes: sl?.speaker_notes ?? '',
-            })) : [],
-          }))
+        const htmlContent = extractHtmlFromResponse(result)
 
-          const parsedProposal: Proposal = {
-            proposal_title: proposalData?.proposal_title ?? 'Untitled Proposal',
-            client_name: proposalData?.client_name ?? 'Unknown Client',
-            deck_depth: proposalData?.deck_depth ?? `${deckDepth}-slide`,
-            total_slides: proposalData?.total_slides ?? 0,
-            sections: normalizedSections,
-            validation_summary: proposalData?.validation_summary ?? '',
+        if (htmlContent) {
+          const newProposal: ProposalData = {
+            htmlContent,
+            deckDepth: `${deckDepth}-slide`,
+            generatedAt: new Date().toISOString(),
           }
-          setProposal(parsedProposal)
+          setProposal(newProposal)
 
-          // Add assistant message
+          const extractedTitle = extractTitleFromHtml(htmlContent)
+          const sectionCount = countSectionsInHtml(htmlContent)
+
           const now = new Date()
           const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           setMessages((prev) => [
             ...prev,
             {
               role: 'assistant',
-              content: `Proposal generated successfully: **${parsedProposal.proposal_title}** with ${parsedProposal.total_slides} slides across ${Array.isArray(parsedProposal.sections) ? parsedProposal.sections.length : 0} sections. Review the preview panel and regenerate individual sections as needed.`,
+              content: `Proposal generated successfully: **${extractedTitle}** with ${sectionCount} sections. Review the preview panel. Use **Regenerate** to create a new version if needed.`,
               timestamp,
             },
           ])
 
-          // Save to history
           const historyEntry: HistoryEntry = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-            proposal: parsedProposal,
-            createdAt: now.toLocaleDateString(),
+            htmlContent,
             deckDepth: `${deckDepth} slides`,
+            generatedAt: now.toLocaleDateString(),
             messageCount: messages.filter((m) => m.role === 'user').length,
           }
           setHistory((prev) => [historyEntry, ...prev])
         } else {
-          // Try extracting text response
-          const textContent = result?.response?.message ?? result?.response?.result?.text ?? ''
-          if (textContent) {
-            const now = new Date()
-            const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            setMessages((prev) => [
-              ...prev,
-              { role: 'assistant', content: String(textContent), timestamp },
-            ])
-          }
-          setError('The agent returned an unexpected response format. Please try again.')
+          setError('The agent returned an empty response. Please try again.')
         }
       } else {
         setError(result?.error ?? 'Failed to generate proposal. Please try again.')
@@ -1393,189 +1309,69 @@ Return a structured JSON proposal with sections, each containing slides with sli
       setProgressPercent(0)
       setGeneratingSection('')
     }
-  }, [messages, buildPrompt, deckDepth])
+  }, [messages, buildPrompt, deckDepth, extractHtmlFromResponse])
 
-  // ─── Regenerate Section ───
-  const handleRegenerateSection = useCallback(
-    async (section: Section) => {
-      setRegeneratingSection(section.section_number)
-      setActiveAgentId(MANAGER_AGENT_ID)
-
-      try {
-        const context = messages
-          .filter((m) => m.role === 'user')
-          .map((m) => m.content)
-          .join('\n\n')
-
-        const prompt = `Regenerate only section ${section.section_number}: "${section.section_name}". Keep all other sections unchanged. Maintain the same overall proposal structure and ${deckDepth}-slide format.
-
-Setting: Venture capital investment review. Audience: Internal investment committee partners. Tone: Analytical, objective, fact-based.
-
-Original context:
-${context}
-
-CRITICAL: Each slide MUST include slide_html with semantic HTML using <section>, <div class="body">, <h1>, <p>, <strong> tags. Each paragraph 30-40 words. Return the regenerated section with slide_title, slide_html, and speaker_notes.`
-
-        const result = await callAIAgent(prompt, MANAGER_AGENT_ID)
-
-        if (result.success && proposal) {
-          const responseData = result?.response?.result
-          // Try to extract the regenerated section
-          let rawSection: any = null
-
-          if (responseData && Array.isArray(responseData?.sections) && responseData.sections.length > 0) {
-            rawSection = responseData.sections[0]
-          } else if (responseData && responseData?.section_name) {
-            rawSection = responseData
-          }
-
-          if (rawSection) {
-            // Normalize the regenerated section
-            const normalizedSection: Section = {
-              section_name: rawSection?.section_name ?? section.section_name,
-              section_number: section.section_number,
-              slides: Array.isArray(rawSection?.slides) ? rawSection.slides.map((sl: any) => ({
-                slide_title: sl?.slide_title ?? 'Untitled Slide',
-                slide_html: sl?.slide_html ?? '',
-                slide_content: Array.isArray(sl?.slide_content) ? sl.slide_content : undefined,
-                speaker_notes: sl?.speaker_notes ?? '',
-              })) : [],
-            }
-
-            setProposal((prev) => {
-              if (!prev) return prev
-              const updatedSections = Array.isArray(prev.sections)
-                ? prev.sections.map((s) =>
-                    s.section_number === section.section_number ? normalizedSection : s
-                  )
-                : []
-              return { ...prev, sections: updatedSections }
-            })
-          }
-        }
-      } catch {
-        setError(`Failed to regenerate section "${section.section_name}". Please try again.`)
-      } finally {
-        setRegeneratingSection(null)
-        setActiveAgentId(null)
-      }
-    },
-    [messages, deckDepth, proposal]
-  )
+  // ─── Regenerate Entire Proposal ───
+  const handleRegenerate = useCallback(async () => {
+    if (messages.filter((m) => m.role === 'user').length === 0) {
+      setError('No client context available. Please add context before regenerating.')
+      return
+    }
+    await handleGenerate()
+  }, [handleGenerate, messages])
 
   // ─── Export Functions ───
-  const exportToJSON = useCallback(() => {
-    if (!proposal) return
-    const blob = new Blob([JSON.stringify(proposal, null, 2)], { type: 'application/json' })
+  const exportToHTML = useCallback(() => {
+    if (!proposal?.htmlContent) return
+    const title = extractTitleFromHtml(proposal.htmlContent)
+    const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${title}</title>
+<style>
+body { font-family: Georgia, 'Times New Roman', serif; max-width: 900px; margin: 0 auto; padding: 2rem; color: #2b2724; background: #fcfcfc; }
+header { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #e0d9d1; }
+header h1 { font-size: 1.75rem; font-weight: 400; letter-spacing: 0.08em; margin: 0 0 0.5rem 0; }
+header .meta { font-size: 0.8125rem; font-weight: 300; color: #8a8078; }
+section { margin-bottom: 2rem; padding: 1.5rem; border: 1px solid #e0d9d1; }
+.body h1 { font-size: 1.25rem; font-weight: 400; letter-spacing: 0.06em; border-bottom: 1px solid #e0d9d1; padding-bottom: 0.5rem; margin-bottom: 0.75rem; }
+.body p { font-size: 0.875rem; font-weight: 300; line-height: 1.8; margin-bottom: 0.625rem; }
+strong { font-weight: 500; color: #8b7236; }
+footer { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid #e0d9d1; font-size: 0.8125rem; font-weight: 300; color: #8a8078; }
+</style>
+</head>
+<body>
+${proposal.htmlContent}
+</body>
+</html>`
+
+    const blob = new Blob([fullHtml], { type: 'text/html' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${(proposal.proposal_title ?? 'proposal').replace(/\s+/g, '_')}.json`
+    a.download = `${title.replace(/\s+/g, '_')}.html`
     a.click()
     URL.revokeObjectURL(url)
   }, [proposal])
 
   const exportToMarkdown = useCallback(() => {
-    if (!proposal) return
-    let md = `# ${proposal?.proposal_title ?? 'Untitled Proposal'}\n\n`
-    md += `**Client:** ${proposal?.client_name ?? 'Unknown'}\n`
-    md += `**Deck Depth:** ${proposal?.deck_depth ?? 'Standard'}\n`
-    md += `**Total Slides:** ${proposal?.total_slides ?? 0}\n\n`
-    if (Array.isArray(proposal?.sections)) {
-      proposal.sections.forEach((section) => {
-        md += `## ${section?.section_number ?? ''}. ${section?.section_name ?? 'Untitled'}\n\n`
-        if (Array.isArray(section?.slides)) {
-          section.slides.forEach((slide) => {
-            md += `### ${slide?.slide_title ?? 'Untitled Slide'}\n\n`
-            // Use slide_html if available, otherwise fall back to slide_content
-            if (typeof slide?.slide_html === 'string' && slide.slide_html.trim()) {
-              // Strip HTML tags for markdown export, preserve text
-              const textContent = slide.slide_html
-                .replace(/<section[^>]*>/gi, '')
-                .replace(/<\/section>/gi, '')
-                .replace(/<div[^>]*>/gi, '')
-                .replace(/<\/div>/gi, '')
-                .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '#### $1\n\n')
-                .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '##### $1\n\n')
-                .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
-                .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
-                .replace(/<li>(.*?)<\/li>/gi, '- $1\n')
-                .replace(/<ul>/gi, '')
-                .replace(/<\/ul>/gi, '')
-                .replace(/<[^>]+>/g, '')
-                .trim()
-              md += `${textContent}\n\n`
-            } else if (Array.isArray(slide?.slide_content)) {
-              slide.slide_content.forEach((item) => {
-                md += `- ${item}\n`
-              })
-              md += '\n'
-            }
-            if (slide?.speaker_notes) {
-              md += `> **Speaker Notes:** ${slide.speaker_notes}\n\n`
-            }
-          })
-        }
-      })
-    }
-    if (proposal?.validation_summary) {
-      md += `---\n\n## Validation Summary\n\n${proposal.validation_summary}\n`
-    }
+    if (!proposal?.htmlContent) return
+    const md = htmlToMarkdown(proposal.htmlContent)
+    const title = extractTitleFromHtml(proposal.htmlContent)
     const blob = new Blob([md], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${(proposal?.proposal_title ?? 'proposal').replace(/\s+/g, '_')}.md`
-    a.click()
-    URL.revokeObjectURL(url)
-  }, [proposal])
-
-  const exportToHTML = useCallback(() => {
-    if (!proposal) return
-    let html = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>${proposal?.proposal_title ?? 'Proposal'}</title>\n<style>\nbody { font-family: 'Cormorant Garamond', 'Didot', serif; max-width: 900px; margin: 0 auto; padding: 2rem; color: #2b2724; background: #fcfcfc; }\nh1 { font-size: 1.5rem; font-weight: 400; letter-spacing: 0.08em; border-bottom: 1px solid #e0d9d1; padding-bottom: 0.5rem; }\nh2 { font-size: 1.125rem; font-weight: 400; letter-spacing: 0.06em; margin-top: 2rem; }\np { font-size: 0.875rem; font-weight: 300; line-height: 1.8; }\nstrong { font-weight: 500; color: #8b7236; }\nsection { margin-bottom: 2rem; padding: 1.5rem; border: 1px solid #e0d9d1; }\n.speaker-notes { font-size: 0.75rem; color: #8a8078; background: #f5f2ee; padding: 0.75rem; margin-top: 0.75rem; font-style: italic; }\n</style>\n</head>\n<body>\n`
-    html += `<h1>${proposal?.proposal_title ?? 'Untitled Proposal'}</h1>\n`
-    html += `<p><strong>Client:</strong> ${proposal?.client_name ?? ''} | <strong>Deck:</strong> ${proposal?.deck_depth ?? ''} | <strong>Slides:</strong> ${proposal?.total_slides ?? 0}</p>\n`
-    if (Array.isArray(proposal?.sections)) {
-      proposal.sections.forEach((section) => {
-        if (Array.isArray(section?.slides)) {
-          section.slides.forEach((slide) => {
-            if (typeof slide?.slide_html === 'string' && slide.slide_html.trim()) {
-              html += slide.slide_html + '\n'
-            }
-            if (slide?.speaker_notes) {
-              html += `<div class="speaker-notes">${slide.speaker_notes}</div>\n`
-            }
-          })
-        }
-      })
-    }
-    html += `</body>\n</html>`
-    const blob = new Blob([html], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${(proposal?.proposal_title ?? 'proposal').replace(/\s+/g, '_')}.html`
+    a.download = `${title.replace(/\s+/g, '_')}.md`
     a.click()
     URL.revokeObjectURL(url)
   }, [proposal])
 
   const handleCopyToClipboard = useCallback(async () => {
-    if (!proposal) return
-    // Copy the raw HTML slides content for direct paste into editors
-    let htmlContent = ''
-    if (Array.isArray(proposal?.sections)) {
-      proposal.sections.forEach((section) => {
-        if (Array.isArray(section?.slides)) {
-          section.slides.forEach((slide) => {
-            if (typeof slide?.slide_html === 'string' && slide.slide_html.trim()) {
-              htmlContent += slide.slide_html + '\n\n'
-            }
-          })
-        }
-      })
-    }
-    const textToCopy = htmlContent.trim() || JSON.stringify(proposal, null, 2)
-    const success = await copyToClipboard(textToCopy)
+    if (!proposal?.htmlContent) return
+    const success = await copyToClipboard(proposal.htmlContent)
     if (success) {
       setCopySuccess(true)
       setTimeout(() => setCopySuccess(false), 2000)
@@ -1584,7 +1380,11 @@ CRITICAL: Each slide MUST include slide_html with semantic HTML using <section>,
 
   // ─── History Actions ───
   const handleLoadHistory = useCallback((entry: HistoryEntry) => {
-    setProposal(entry.proposal)
+    setProposal({
+      htmlContent: entry.htmlContent ?? '',
+      deckDepth: entry.deckDepth ?? '',
+      generatedAt: entry.generatedAt ?? '',
+    })
     setActiveView('workspace')
   }, [])
 
@@ -1687,14 +1487,14 @@ CRITICAL: Each slide MUST include slide_html with semantic HTML using <section>,
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={exportToJSON}
+                          onClick={exportToHTML}
                           className="text-[10px] font-light tracking-wider h-8 px-3"
                         >
-                          <FiDownload className="w-3 h-3 mr-1" />
-                          JSON
+                          <FiCode className="w-3 h-3 mr-1" />
+                          HTML
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Export to Gamma (JSON)</TooltipContent>
+                      <TooltipContent>Export as HTML document</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                   <TooltipProvider>
@@ -1719,14 +1519,14 @@ CRITICAL: Each slide MUST include slide_html with semantic HTML using <section>,
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={exportToHTML}
+                          onClick={handleCopyToClipboard}
                           className="text-[10px] font-light tracking-wider h-8 px-3"
                         >
-                          <FiCode className="w-3 h-3 mr-1" />
-                          HTML
+                          <FiCopy className="w-3 h-3 mr-1" />
+                          Copy
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Export HTML Slides</TooltipContent>
+                      <TooltipContent>Copy HTML to clipboard</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                   {copySuccess && (
@@ -1791,8 +1591,8 @@ CRITICAL: Each slide MUST include slide_html with semantic HTML using <section>,
                     loading={loading}
                     generatingSection={generatingSection}
                     progressPercent={progressPercent}
-                    onRegenerateSection={handleRegenerateSection}
-                    onExportJSON={exportToJSON}
+                    onRegenerate={handleRegenerate}
+                    onExportHTML={exportToHTML}
                     onExportMarkdown={exportToMarkdown}
                     onCopyToClipboard={handleCopyToClipboard}
                   />
