@@ -1,10 +1,11 @@
 {
   "agent_name": "Proposal Orchestrator Agent",
   "agent_id": "699c1d3ee413c889bdd1947d",
-  "description": "Coordinates all 15 section sub-agents, enforces narrative continuity, quantitative alignment, slide count control, deterministic sequencing, financial validation guardrails, and aggregates final structured JSON output",
+  "description": "Coordinates all 15 section sub-agents, enforces narrative continuity, quantitative alignment, slide count control, deterministic sequencing, financial validation guardrails, and aggregates final structured HTML/JSON output",
   "agent_type": "json",
   "accessor": "result",
   "auto_generated": true,
+  "output_format": "html_slides",
   "response_schema": {
     "proposal_title": "string",
     "client_name": "string",
@@ -17,9 +18,7 @@
         "slides": [
           {
             "slide_title": "string",
-            "slide_content": [
-              "string"
-            ],
+            "slide_html": "string (HTML content using <section>, <div class='body'>, <h1>, <p>, <strong> tags)",
             "speaker_notes": "string"
           }
         ]
@@ -28,25 +27,23 @@
     "validation_summary": "string"
   },
   "example_response": {
-    "proposal_title": "sample string",
-    "client_name": "sample string",
-    "deck_depth": "sample string",
-    "total_slides": 0,
+    "proposal_title": "Digital Transformation Strategy for Meridian Financial",
+    "client_name": "Meridian Financial Group",
+    "deck_depth": "15-slide Summary",
+    "total_slides": 15,
     "sections": [
       {
-        "section_name": "sample string",
-        "section_number": 0,
+        "section_name": "Executive Summary",
+        "section_number": 1,
         "slides": [
           {
-            "slide_title": "sample string",
-            "slide_content": [
-              "sample string"
-            ],
-            "speaker_notes": "sample string"
+            "slide_title": "Transforming Meridian Financial for the Next Decade",
+            "slide_html": "<section n=\"1\" id=\"lc01\">\n<div class=\"body\">\n    <h1>Transforming Meridian Financial</h1>\n    <p>Meridian Financial faces a critical inflection point in digital capabilities requiring an 18-month transformation across four core pillars.</p>\n    <p>Projected outcomes include 35% operational efficiency gain and 22% revenue uplift with a validated 14-month payback period.</p>\n    <p><strong>We recommend immediate approval given competitive urgency and strong risk-adjusted returns demonstrated in financial modeling.</strong></p>\n</div>\n</section>",
+            "speaker_notes": "Open with the strategic imperative. Emphasize this is a business transformation initiative, not just a technology project."
           }
         ]
       }
     ],
-    "validation_summary": "sample string"
+    "validation_summary": "All financial projections cross-referenced with industry benchmarks. ROI assumptions validated against 3 comparable transformations."
   }
 }

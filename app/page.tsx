@@ -16,7 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { FiSend, FiUpload, FiDownload, FiRefreshCw, FiChevronDown, FiChevronUp, FiFile, FiTrash2, FiClock, FiSettings, FiLayout, FiCheckCircle, FiAlertCircle, FiCopy, FiX, FiMenu, FiFileText, FiGrid, FiList } from 'react-icons/fi'
+import { FiSend, FiUpload, FiDownload, FiRefreshCw, FiChevronDown, FiChevronUp, FiFile, FiTrash2, FiClock, FiSettings, FiLayout, FiCheckCircle, FiAlertCircle, FiCopy, FiX, FiMenu, FiFileText, FiGrid, FiList, FiCode } from 'react-icons/fi'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -52,7 +52,8 @@ const THEME_VARS = {
 
 interface Slide {
   slide_title: string
-  slide_content: string[]
+  slide_html: string
+  slide_content?: string[]
   speaker_notes: string
 }
 
@@ -112,12 +113,7 @@ const SAMPLE_PROPOSAL: Proposal = {
       slides: [
         {
           slide_title: 'Transforming Meridian Financial for the Next Decade',
-          slide_content: [
-            'Meridian Financial faces critical inflection point in digital capabilities',
-            'Proposed 18-month transformation roadmap across 4 core pillars',
-            'Projected 35% operational efficiency gain and 22% revenue uplift',
-            'Total investment of $4.2M with 14-month payback period'
-          ],
+          slide_html: '<section n="1" id="lc01">\n<div class="body">\n    <h1>Transforming Meridian Financial for the Next Decade</h1>\n    <p>Meridian Financial faces a critical inflection point in digital capabilities. We propose an 18-month transformation roadmap across four core pillars targeting operational modernization and revenue growth.</p>\n    <p>Projected outcomes include 35% operational efficiency gain and 22% revenue uplift, with a total investment of $4.2M and a validated 14-month payback period.</p>\n    <p><strong>We recommend immediate approval of this transformation initiative given the competitive urgency and strong risk-adjusted returns demonstrated in our financial modeling.</strong></p>\n</div>\n</section>',
           speaker_notes: 'Open with the strategic imperative. Emphasize that this is not a technology project but a business transformation initiative. Reference CEO\'s keynote from Q3 earnings call about digital-first strategy.'
         }
       ]
@@ -128,13 +124,8 @@ const SAMPLE_PROPOSAL: Proposal = {
       slides: [
         {
           slide_title: 'Where Meridian Stands Today',
-          slide_content: [
-            'Legacy core banking platform limits product velocity',
-            'Customer NPS declined 12 points YoY due to digital experience gaps',
-            'Manual processes consume 40% of middle-office capacity',
-            'Competitor analysis shows Meridian trailing in 6 of 8 digital capability areas'
-          ],
-          speaker_notes: 'Use specific data points from the diagnostic assessment. Avoid being overly negative; frame as opportunity for improvement rather than criticism of current operations.'
+          slide_html: '<section n="2" id="lc02">\n<div class="body">\n    <h1>Where Meridian Stands Today</h1>\n    <p>Legacy core banking platform limits product velocity significantly. Customer NPS declined 12 points year-over-year, driven primarily by digital experience gaps across mobile and web channels.</p>\n    <p>Manual processes consume 40% of middle-office capacity. Competitor analysis reveals Meridian trailing in six of eight digital capability areas measured by industry benchmarks.</p>\n    <p><strong>Without intervention, current trajectory projects further NPS erosion and an estimated $6.2M in unrealized revenue over the next 24 months.</strong></p>\n</div>\n</section>',
+          speaker_notes: 'Use specific data points from the diagnostic assessment. Frame as opportunity for improvement rather than criticism of current operations.'
         }
       ]
     },
@@ -144,12 +135,7 @@ const SAMPLE_PROPOSAL: Proposal = {
       slides: [
         {
           slide_title: 'Four-Pillar Transformation Framework',
-          slide_content: [
-            'Pillar 1: API-first core modernization with phased migration',
-            'Pillar 2: Unified customer data platform and 360-degree view',
-            'Pillar 3: Intelligent automation for credit decisioning and compliance',
-            'Pillar 4: Real-time analytics and executive dashboard suite'
-          ],
+          slide_html: '<section n="3" id="lc03">\n<div class="body">\n    <h1>Four-Pillar Transformation Framework</h1>\n    <p>Pillar 1: API-first core modernization with phased migration. Pillar 2: Unified customer data platform delivering a comprehensive 360-degree client view across all touchpoints.</p>\n    <p>Pillar 3: Intelligent automation for credit decisioning and compliance workflows. Pillar 4: Real-time analytics and executive dashboard suite enabling data-driven decision making at all levels.</p>\n    <p><strong>Each pillar is interdependent but structured for phased delivery, enabling risk containment while maintaining transformation momentum across the program.</strong></p>\n</div>\n</section>',
           speaker_notes: 'Walk through each pillar sequentially. Emphasize that pillars are interdependent but can be phased for risk management.'
         }
       ]
@@ -160,13 +146,8 @@ const SAMPLE_PROPOSAL: Proposal = {
       slides: [
         {
           slide_title: 'Investment Returns and Value Creation',
-          slide_content: [
-            'Year 1 savings: $1.8M from automation of manual processes',
-            'Year 2 revenue uplift: $3.2M from improved customer conversion',
-            'Year 3 cumulative NPV: $8.7M at 12% discount rate',
-            'Risk-adjusted IRR of 42% across the transformation program'
-          ],
-          speaker_notes: 'Financial projections validated by Meridian CFO office. Conservative scenario shows breakeven at month 14; optimistic scenario at month 10.'
+          slide_html: '<section n="4" id="lc04">\n<div class="body">\n    <h1>Investment Returns and Value Creation</h1>\n    <p>Year 1 savings of $1.8M from automation of manual processes. Year 2 revenue uplift of $3.2M projected from improved customer conversion rates across digital and branch channels.</p>\n    <p>Year 3 cumulative NPV reaches $8.7M at 12% discount rate. Risk-adjusted IRR of 42% across the full transformation program using conservative baseline assumptions.</p>\n    <p><strong>Financial projections validated by Meridian CFO office. Conservative scenario shows breakeven at month 14; optimistic scenario achieves breakeven at month 10.</strong></p>\n</div>\n</section>',
+          speaker_notes: 'All financial projections validated by Meridian CFO office. Present conservative, base, and optimistic scenarios.'
         }
       ]
     },
@@ -176,18 +157,13 @@ const SAMPLE_PROPOSAL: Proposal = {
       slides: [
         {
           slide_title: 'Phased Delivery Roadmap',
-          slide_content: [
-            'Phase 1 (Months 1-4): Foundation and data platform setup',
-            'Phase 2 (Months 5-10): Core system migration and automation deployment',
-            'Phase 3 (Months 11-15): Analytics layer and optimization',
-            'Phase 4 (Months 16-18): Full rollout and change management'
-          ],
+          slide_html: '<section n="5" id="lc05">\n<div class="body">\n    <h1>Phased Delivery Roadmap</h1>\n    <p>Phase 1 (Months 1-4): Foundation and data platform setup with early-win deliverables. Phase 2 (Months 5-10): Core system migration and automation deployment targeting highest-impact workflows first.</p>\n    <p>Phase 3 (Months 11-15): Analytics layer build-out and performance optimization. Phase 4 (Months 16-18): Full organizational rollout with structured change management and adoption tracking.</p>\n    <p><strong>Decision gates between phases ensure investment committee oversight at each stage, with documented go/no-go criteria and rollback provisions.</strong></p>\n</div>\n</section>',
           speaker_notes: 'Highlight early wins in Phase 1 to build momentum and stakeholder confidence. Note key decision gates between phases.'
         }
       ]
     }
   ],
-  validation_summary: '**Validation Complete** -- All financial projections cross-referenced with industry benchmarks. ROI assumptions validated against 3 comparable transformations. Risk factors documented with mitigation strategies for each phase.'
+  validation_summary: '<strong>Validation Complete</strong> -- All financial projections cross-referenced with industry benchmarks. ROI assumptions validated against 3 comparable transformations. Risk factors documented with mitigation strategies for each phase.'
 }
 
 const SAMPLE_MESSAGES: ChatMessage[] = [
@@ -583,6 +559,10 @@ function SlideCard({
 }) {
   const [notesOpen, setNotesOpen] = useState(false)
 
+  // Determine if we have HTML content or legacy array content
+  const hasHtml = typeof slide?.slide_html === 'string' && slide.slide_html.trim().length > 0
+  const hasLegacyContent = Array.isArray(slide?.slide_content) && slide.slide_content.length > 0
+
   return (
     <Card className="border-border shadow-sm">
       <CardHeader className="pb-3 pt-4 px-5">
@@ -595,9 +575,14 @@ function SlideCard({
         </div>
       </CardHeader>
       <CardContent className="px-5 pb-3">
-        <ul className="space-y-1.5">
-          {Array.isArray(slide?.slide_content) &&
-            slide.slide_content.map((item, j) => (
+        {hasHtml ? (
+          <div
+            className="slide-html-content text-xs font-light text-foreground/80 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: slide.slide_html }}
+          />
+        ) : hasLegacyContent ? (
+          <ul className="space-y-1.5">
+            {slide.slide_content!.map((item, j) => (
               <li
                 key={j}
                 className="text-xs font-light text-foreground/80 leading-relaxed flex gap-2"
@@ -606,7 +591,10 @@ function SlideCard({
                 <span>{item}</span>
               </li>
             ))}
-        </ul>
+          </ul>
+        ) : (
+          <p className="text-xs text-muted-foreground font-light italic">No content available</p>
+        )}
       </CardContent>
       {slide?.speaker_notes && (
         <CardFooter className="px-5 pb-4">
@@ -808,9 +796,16 @@ function ProposalPreview({
                   Validation Summary
                 </span>
               </div>
-              <div className="text-sm font-light text-foreground/80 leading-relaxed">
-                {renderMarkdown(proposal.validation_summary)}
-              </div>
+              {proposal.validation_summary.includes('<') ? (
+                <div
+                  className="text-sm font-light text-foreground/80 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: proposal.validation_summary }}
+                />
+              ) : (
+                <div className="text-sm font-light text-foreground/80 leading-relaxed">
+                  {renderMarkdown(proposal.validation_summary)}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1215,7 +1210,18 @@ ${marketingDirective}
 Client Context:
 ${allMessages}
 
-Please produce a structured JSON proposal with sections organized for a comprehensive ${deckDepth}-slide deck. Each section should contain slides with clear titles, bullet-point content, and speaker notes.`
+CRITICAL OUTPUT FORMAT: Each slide MUST include a slide_html field containing semantic HTML content. Use this exact format per slide:
+
+<section n="{slide_number}" id="lc{zero_padded_number}">
+<div class="body">
+    <h1>{Slide Title}</h1>
+    <p>[Content paragraph — 30-40 words, factual and analytical]</p>
+    <p>[Content paragraph — 30-40 words, grounded in data]</p>
+    <p><strong>[Key takeaway or recommendation — 30-40 words]</strong></p>
+</div>
+</section>
+
+Return a structured JSON proposal with sections, each containing slides with slide_title, slide_html (the HTML block above), and speaker_notes.`
   }, [messages, deckDepth, settings])
 
   // ─── Send Message ───
@@ -1319,12 +1325,25 @@ Please produce a structured JSON proposal with sections organized for a comprehe
       if (result.success) {
         const proposalData = result?.response?.result
         if (proposalData && typeof proposalData === 'object') {
+          // Normalize sections to ensure slide_html is mapped properly
+          const rawSections = Array.isArray(proposalData?.sections) ? proposalData.sections : []
+          const normalizedSections = rawSections.map((sec: any) => ({
+            section_name: sec?.section_name ?? 'Untitled Section',
+            section_number: sec?.section_number ?? 0,
+            slides: Array.isArray(sec?.slides) ? sec.slides.map((sl: any) => ({
+              slide_title: sl?.slide_title ?? 'Untitled Slide',
+              slide_html: sl?.slide_html ?? '',
+              slide_content: Array.isArray(sl?.slide_content) ? sl.slide_content : undefined,
+              speaker_notes: sl?.speaker_notes ?? '',
+            })) : [],
+          }))
+
           const parsedProposal: Proposal = {
             proposal_title: proposalData?.proposal_title ?? 'Untitled Proposal',
             client_name: proposalData?.client_name ?? 'Unknown Client',
             deck_depth: proposalData?.deck_depth ?? `${deckDepth}-slide`,
             total_slides: proposalData?.total_slides ?? 0,
-            sections: Array.isArray(proposalData?.sections) ? proposalData.sections : [],
+            sections: normalizedSections,
             validation_summary: proposalData?.validation_summary ?? '',
           }
           setProposal(parsedProposal)
@@ -1390,30 +1409,44 @@ Please produce a structured JSON proposal with sections organized for a comprehe
 
         const prompt = `Regenerate only section ${section.section_number}: "${section.section_name}". Keep all other sections unchanged. Maintain the same overall proposal structure and ${deckDepth}-slide format.
 
+Setting: Venture capital investment review. Audience: Internal investment committee partners. Tone: Analytical, objective, fact-based.
+
 Original context:
 ${context}
 
-Return the regenerated section with updated slides, content, and speaker notes.`
+CRITICAL: Each slide MUST include slide_html with semantic HTML using <section>, <div class="body">, <h1>, <p>, <strong> tags. Each paragraph 30-40 words. Return the regenerated section with slide_title, slide_html, and speaker_notes.`
 
         const result = await callAIAgent(prompt, MANAGER_AGENT_ID)
 
         if (result.success && proposal) {
           const responseData = result?.response?.result
           // Try to extract the regenerated section
-          let newSection: Section | null = null
+          let rawSection: any = null
 
           if (responseData && Array.isArray(responseData?.sections) && responseData.sections.length > 0) {
-            newSection = responseData.sections[0] as Section
+            rawSection = responseData.sections[0]
           } else if (responseData && responseData?.section_name) {
-            newSection = responseData as unknown as Section
+            rawSection = responseData
           }
 
-          if (newSection) {
+          if (rawSection) {
+            // Normalize the regenerated section
+            const normalizedSection: Section = {
+              section_name: rawSection?.section_name ?? section.section_name,
+              section_number: section.section_number,
+              slides: Array.isArray(rawSection?.slides) ? rawSection.slides.map((sl: any) => ({
+                slide_title: sl?.slide_title ?? 'Untitled Slide',
+                slide_html: sl?.slide_html ?? '',
+                slide_content: Array.isArray(sl?.slide_content) ? sl.slide_content : undefined,
+                speaker_notes: sl?.speaker_notes ?? '',
+              })) : [],
+            }
+
             setProposal((prev) => {
               if (!prev) return prev
               const updatedSections = Array.isArray(prev.sections)
                 ? prev.sections.map((s) =>
-                    s.section_number === section.section_number ? { ...newSection as Section, section_number: section.section_number } : s
+                    s.section_number === section.section_number ? normalizedSection : s
                   )
                 : []
               return { ...prev, sections: updatedSections }
@@ -1454,13 +1487,32 @@ Return the regenerated section with updated slides, content, and speaker notes.`
         if (Array.isArray(section?.slides)) {
           section.slides.forEach((slide) => {
             md += `### ${slide?.slide_title ?? 'Untitled Slide'}\n\n`
-            if (Array.isArray(slide?.slide_content)) {
+            // Use slide_html if available, otherwise fall back to slide_content
+            if (typeof slide?.slide_html === 'string' && slide.slide_html.trim()) {
+              // Strip HTML tags for markdown export, preserve text
+              const textContent = slide.slide_html
+                .replace(/<section[^>]*>/gi, '')
+                .replace(/<\/section>/gi, '')
+                .replace(/<div[^>]*>/gi, '')
+                .replace(/<\/div>/gi, '')
+                .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '#### $1\n\n')
+                .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '##### $1\n\n')
+                .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+                .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
+                .replace(/<li>(.*?)<\/li>/gi, '- $1\n')
+                .replace(/<ul>/gi, '')
+                .replace(/<\/ul>/gi, '')
+                .replace(/<[^>]+>/g, '')
+                .trim()
+              md += `${textContent}\n\n`
+            } else if (Array.isArray(slide?.slide_content)) {
               slide.slide_content.forEach((item) => {
                 md += `- ${item}\n`
               })
+              md += '\n'
             }
             if (slide?.speaker_notes) {
-              md += `\n> **Speaker Notes:** ${slide.speaker_notes}\n\n`
+              md += `> **Speaker Notes:** ${slide.speaker_notes}\n\n`
             }
           })
         }
@@ -1478,10 +1530,52 @@ Return the regenerated section with updated slides, content, and speaker notes.`
     URL.revokeObjectURL(url)
   }, [proposal])
 
+  const exportToHTML = useCallback(() => {
+    if (!proposal) return
+    let html = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>${proposal?.proposal_title ?? 'Proposal'}</title>\n<style>\nbody { font-family: 'Cormorant Garamond', 'Didot', serif; max-width: 900px; margin: 0 auto; padding: 2rem; color: #2b2724; background: #fcfcfc; }\nh1 { font-size: 1.5rem; font-weight: 400; letter-spacing: 0.08em; border-bottom: 1px solid #e0d9d1; padding-bottom: 0.5rem; }\nh2 { font-size: 1.125rem; font-weight: 400; letter-spacing: 0.06em; margin-top: 2rem; }\np { font-size: 0.875rem; font-weight: 300; line-height: 1.8; }\nstrong { font-weight: 500; color: #8b7236; }\nsection { margin-bottom: 2rem; padding: 1.5rem; border: 1px solid #e0d9d1; }\n.speaker-notes { font-size: 0.75rem; color: #8a8078; background: #f5f2ee; padding: 0.75rem; margin-top: 0.75rem; font-style: italic; }\n</style>\n</head>\n<body>\n`
+    html += `<h1>${proposal?.proposal_title ?? 'Untitled Proposal'}</h1>\n`
+    html += `<p><strong>Client:</strong> ${proposal?.client_name ?? ''} | <strong>Deck:</strong> ${proposal?.deck_depth ?? ''} | <strong>Slides:</strong> ${proposal?.total_slides ?? 0}</p>\n`
+    if (Array.isArray(proposal?.sections)) {
+      proposal.sections.forEach((section) => {
+        if (Array.isArray(section?.slides)) {
+          section.slides.forEach((slide) => {
+            if (typeof slide?.slide_html === 'string' && slide.slide_html.trim()) {
+              html += slide.slide_html + '\n'
+            }
+            if (slide?.speaker_notes) {
+              html += `<div class="speaker-notes">${slide.speaker_notes}</div>\n`
+            }
+          })
+        }
+      })
+    }
+    html += `</body>\n</html>`
+    const blob = new Blob([html], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${(proposal?.proposal_title ?? 'proposal').replace(/\s+/g, '_')}.html`
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [proposal])
+
   const handleCopyToClipboard = useCallback(async () => {
     if (!proposal) return
-    const text = JSON.stringify(proposal, null, 2)
-    const success = await copyToClipboard(text)
+    // Copy the raw HTML slides content for direct paste into editors
+    let htmlContent = ''
+    if (Array.isArray(proposal?.sections)) {
+      proposal.sections.forEach((section) => {
+        if (Array.isArray(section?.slides)) {
+          section.slides.forEach((slide) => {
+            if (typeof slide?.slide_html === 'string' && slide.slide_html.trim()) {
+              htmlContent += slide.slide_html + '\n\n'
+            }
+          })
+        }
+      })
+    }
+    const textToCopy = htmlContent.trim() || JSON.stringify(proposal, null, 2)
+    const success = await copyToClipboard(textToCopy)
     if (success) {
       setCopySuccess(true)
       setTimeout(() => setCopySuccess(false), 2000)
@@ -1617,6 +1711,22 @@ Return the regenerated section with updated slides, content, and speaker notes.`
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>Export Markdown</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={exportToHTML}
+                          className="text-[10px] font-light tracking-wider h-8 px-3"
+                        >
+                          <FiCode className="w-3 h-3 mr-1" />
+                          HTML
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Export HTML Slides</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                   {copySuccess && (

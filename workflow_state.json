@@ -18,5 +18,9 @@
     "closing_cta": "699c1d23dcca2f3f8671d8f3"
   },
   "rag_id": "699c1cbbb45a5c2df18ccf9b",
-  "rag_name": "proposaldocumentskbfy7i"
+  "rag_name": "proposaldocumentskbfy7i",
+  "output_format": "html_slides",
+  "setting": "venture_capital_investment_review",
+  "response_schema_change": "slide_content_array_replaced_with_slide_html_string",
+  "last_updated": "2026-02-23"
 }

@@ -73,3 +73,99 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ─── HTML Slide Content Styles (Luxury Minimal Theme) ─── */
+.slide-html-content section {
+  margin: 0;
+  padding: 0;
+}
+
+.slide-html-content .body {
+  padding: 0;
+}
+
+.slide-html-content h1 {
+  font-family: 'Cormorant Garamond', 'Didot', 'Bodoni MT', serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  color: hsl(30 5% 15%);
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid hsl(30 10% 88%);
+  padding-bottom: 0.5rem;
+}
+
+.slide-html-content h2 {
+  font-family: 'Cormorant Garamond', 'Didot', 'Bodoni MT', serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: hsl(30 5% 15%);
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.slide-html-content p {
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: hsl(30 5% 15% / 0.8);
+  margin-bottom: 0.625rem;
+}
+
+.slide-html-content p:last-child {
+  margin-bottom: 0;
+}
+
+.slide-html-content strong {
+  font-weight: 500;
+  color: hsl(40 30% 45%);
+}
+
+.slide-html-content ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5rem 0;
+}
+
+.slide-html-content ul li {
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: hsl(30 5% 15% / 0.8);
+  padding-left: 1rem;
+  position: relative;
+  margin-bottom: 0.25rem;
+}
+
+.slide-html-content ul li::before {
+  content: '\2013';
+  position: absolute;
+  left: 0;
+  color: hsl(40 30% 45%);
+}
+
+.slide-html-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+  font-size: 0.6875rem;
+}
+
+.slide-html-content th,
+.slide-html-content td {
+  padding: 0.375rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid hsl(30 10% 88%);
+  font-weight: 300;
+}
+
+.slide-html-content th {
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.625rem;
+  color: hsl(30 5% 50%);
+}
