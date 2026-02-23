@@ -1,0 +1,22 @@
+{
+  "manager_agent_id": "699c1d3ee413c889bdd1947d",
+  "sub_agent_ids": {
+    "title_framing": "699c1cdee413c889bdd1945c",
+    "executive_summary": "699c1cdee413c889bdd1945e",
+    "strategic_context": "699c1cde46f0831187e18aae",
+    "core_challenge": "699c1cdf59c267c798882796",
+    "solution_overview": "699c1cdfe413c889bdd19460",
+    "detailed_architecture": "699c1d0046f0831187e18ac8",
+    "value_case_roi": "699c1d01142c9c0859b0ea6f",
+    "scope_of_work": "699c1d01ac9e6df688570f53",
+    "governance_security": "699c1d015b80a5af8619b65c",
+    "execution_delivery": "699c1d027e4724d07b489db5",
+    "commercials_pricing": "699c1d2246f0831187e18ade",
+    "implementation_roadmap": "699c1d225d6c76d4d2b85934",
+    "risk_mitigation": "699c1d223038a196721d1414",
+    "case_studies": "699c1d22ac9e6df688570f61",
+    "closing_cta": "699c1d23dcca2f3f8671d8f3"
+  },
+  "rag_id": "699c1cbbb45a5c2df18ccf9b",
+  "rag_name": "proposaldocumentskbfy7i"
+}

@@ -1,0 +1,41 @@
+{
+  "nodes": [
+    {"id": "input_node", "type": "Input", "label": "User Input", "nodeCategory": "input"},
+    {"id": "manager_agent", "type": "Agent", "label": "Proposal Orchestrator Agent", "nodeCategory": "agent"},
+    {"id": "title_framing", "type": "Agent", "label": "Title & Framing Agent", "nodeCategory": "agent"},
+    {"id": "executive_summary", "type": "Agent", "label": "Executive Summary Agent", "nodeCategory": "agent"},
+    {"id": "strategic_context", "type": "Agent", "label": "Strategic Context Agent", "nodeCategory": "agent"},
+    {"id": "core_challenge", "type": "Agent", "label": "Core Challenge Agent", "nodeCategory": "agent"},
+    {"id": "solution_overview", "type": "Agent", "label": "Solution Overview Agent", "nodeCategory": "agent"},
+    {"id": "detailed_architecture", "type": "Agent", "label": "Detailed Architecture Agent", "nodeCategory": "agent"},
+    {"id": "value_case_roi", "type": "Agent", "label": "Value Case & ROI Agent", "nodeCategory": "agent"},
+    {"id": "scope_of_work", "type": "Agent", "label": "Scope of Work Agent", "nodeCategory": "agent"},
+    {"id": "governance_security", "type": "Agent", "label": "Governance & Security Agent", "nodeCategory": "agent"},
+    {"id": "execution_delivery", "type": "Agent", "label": "Execution & Delivery Agent", "nodeCategory": "agent"},
+    {"id": "commercials_pricing", "type": "Agent", "label": "Commercials & Pricing Agent", "nodeCategory": "agent"},
+    {"id": "implementation_roadmap", "type": "Agent", "label": "Implementation Roadmap Agent", "nodeCategory": "agent"},
+    {"id": "risk_mitigation", "type": "Agent", "label": "Risk Mitigation Agent", "nodeCategory": "agent"},
+    {"id": "case_studies", "type": "Agent", "label": "Case Studies Agent", "nodeCategory": "agent"},
+    {"id": "closing_cta", "type": "Agent", "label": "Closing & CTA Agent", "nodeCategory": "agent"},
+    {"id": "output_node", "type": "Output", "label": "Proposal Output", "nodeCategory": "end"}
+  ],
+  "edges": [
+    {"source": "input_node", "target": "manager_agent"},
+    {"source": "manager_agent", "target": "title_framing"},
+    {"source": "manager_agent", "target": "executive_summary"},
+    {"source": "manager_agent", "target": "strategic_context"},
+    {"source": "manager_agent", "target": "core_challenge"},
+    {"source": "manager_agent", "target": "solution_overview"},
+    {"source": "manager_agent", "target": "detailed_architecture"},
+    {"source": "manager_agent", "target": "value_case_roi"},
+    {"source": "manager_agent", "target": "scope_of_work"},
+    {"source": "manager_agent", "target": "governance_security"},
+    {"source": "manager_agent", "target": "execution_delivery"},
+    {"source": "manager_agent", "target": "commercials_pricing"},
+    {"source": "manager_agent", "target": "implementation_roadmap"},
+    {"source": "manager_agent", "target": "risk_mitigation"},
+    {"source": "manager_agent", "target": "case_studies"},
+    {"source": "manager_agent", "target": "closing_cta"},
+    {"source": "manager_agent", "target": "output_node"}
+  ]
+}
